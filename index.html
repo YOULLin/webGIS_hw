@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="assignment4.js"></script>
+    <link rel="stylesheet" type="text/css" href="assignment4.css">
+    <title>MoneyBook</title>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- 本月資訊 -->
+        <div class="row" id="top">
+            <div class="col-12 bg-secondary text-white">
+                <p><h2 id="title-name">簡易記帳本</h2></p>
+            </div>
+        </div>
+        <!-- 每月明細清單 -->
+        <div class="row" id="center">
+        <!-- 本月預算 -->
+            <div class="col-12">
+                <div class="row">
+                    <div class="col">
+                        <p><h3 id="title-time">十二月</h3></p>
+                    </div> 
+                </div>
+                <div class="row">
+                    <div class="col-4"><p>本月消費預算</p></div>
+                    <div class="col-6 text-right">                
+                        <span id="budgetNum">尚未設定預算</span>
+                        <span>
+                            <!-- 無設定預算才會出現按鈕  -->
+                            <button id="add-budget-btn" type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#addBudgetModal">
+                                設定本月預算
+                            </button>
+                        </span>
+                    </div>
+                    <div id="budgetDoller" class="col-2" style="display: none">元</div>
+                </div>
+                <div class="row">
+                    <dov class="col-4"><p>本月目前支出</p></dov>
+                    <div class="col-6 text-right" id="currentExpense"></div>
+                    <div class="col-2">元</div>
+                </div>
+                <div class="row">
+                    <div class="col-4"><p>本月可花費餘額</p></div>
+                    <div class="col-6 text-right" id="currentBalance"></div>
+                    <div class="col-2">元</div>
+                </div>
+                <!-- 本月收支明細下載按紐 -->
+                <div class="row">
+                    <div class="col-12 text-left">
+                        <button type="button" class="btn btn-outline-danger" onclick="downloadFile('downloadMonthly.php')">下載本月收支(.csv)</button>
+                    </div>
+                </div>
+            </div>
+            <!-- 每月收入/支出 -->
+            <div class="col-12">
+                <div class="row">
+                    <ul class="col nav nav-justifyed" id="monthStats">
+                        <li class="monthStatsBlock col nav-item">
+                            <div class="monthStatsTitle">收入</div>
+                            <div class="monthStatsSum" id="monthIncomeSum">0</div>
+                        </li>
+                        <li class="monthStatsBlock col nav-item">
+                            <div class="monthStatsTitle">支出</div>
+                            <div class="monthStatsSum" id="monthExpendSum">0</div>
+                        </li>
+                        <li class="monthStatsBlock col nav-item">
+                            <div class="monthStatsTitle">總額</div>
+                            <div class="monthStatsSum" id="monthBalanceSum">0</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col" id="card-outline">
+                <div class="card text-center col-12" id="cards">
+                    <div class="card-header" id="list-header">
+                        <ul class="nav nav-justifyed justify-content">
+                            <li class="col nav-item">時間</li>
+                            <li class="col nav-item">類別</li>
+                            <li class="col nav-item">類型</li>
+                            <li class="col nav-item">品項</li>
+                            <li class="col nav-item">金額</li>
+                        </ul>
+                    </div>
+                    <div class="card-body border-secondary p-0" id="list-body">
+                        <div class="accordion">
+                            <div class="card" id="expRecordCard">
+                                <!-- 測試用 -->
+                                <div class="card-header lists-header py-1 px-1 bg-transparent" id="heading1">
+                                    <button class="btn btn-link col text-decoration-none text-dark" type="button" data-toggle="collapse" data-target="#collapse1">
+                                        <ul class="nav nav-justifyed justify-content">
+                                            <li class="col nav-item">2019-12-06</li>
+                                            <li class="col nav-item">支出</li>
+                                            <li class="col nav-item">生活</li>
+                                            <li class="col nav-item">展示用</li>
+                                            <li class="col nav-item">0</li>
+                                        </ul>
+                                    </button>
+                                </div>
+                                <div class="collapse bg-transparent bd-4 shadow-sm" data-parent="#heading1" id="collapse1">
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table">
+                                                <thead class="d-none"></thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <th scope="row" style="width: 25%">地點</th>
+                                                        <td style="width: 75%">404 class</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row" style="width: 25%">備註</th>
+                                                        <td style="width: 75%">示範備註，可以繼續新增</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row" style="width: 25%">照片</th>
+                                                        <td style="width: 75%">
+                                                            <img class="recordimgs" src="file/70595445_2923774460969396_5854899993432817664_n.jpg"/>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 以下用javascript新增 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <button type="button" class="float-right btn btn-danger btn-lg" data-toggle="modal" data-target="#addExpenseModal" onclick="setDefaultFormValue()" id="add-expense-btn">
+                    +
+                </button>
+            </div>
+        </div>
+        <div class="row bg-secondary" id="footer">
+        </div>
+        <!-- Add Budget Form -->
+        <div class="modal fade" id="addBudgetModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">設定本月預算</h5>
+                        <button id="add-budget-btn" type="button" class="close" data-dismiss="modal" onclick="clearForm()">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <h6>請新增這個月的預算</h6>
+                        <form>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">新台幣 $</span>
+                                </div>
+                                <input id="inputBudget" type="text" class="form-contral col-8"/>
+                                <div class="input-group-append">
+                                    <span class="input-group-text">元</span>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="clearForm()">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="subBudgetForm()" id="budgetBtn">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Add Expense Form -->
+        <div class="modal fade" id="addExpenseModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">新增消費紀錄</h5>
+                        <button type="button" class="close" data-dismiss="modal" onclick="setDefaultFormValue()">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <h6 style="color: grey; margin-bottom: 1rem; font-size: .9rem; text-align: right;">*為必填欄位</h6>
+                        <form id="newExpenseForm" method="post" enctype="multipart/form-data">
+                            <div class="form-group row">
+                                <label for="inputTime" class="col-sm-2 col-form-label">日期*</label>
+                                <div class="col-sm-10">
+                                    <input type="date" class="form-control" id="inputDate" value=""/>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="inputType" class="col-sm-2 col-form-label">類型*</label>
+                                <div class="col-sm-10">
+                                    <select name="inputType" class="form-control" id="inputType">
+                                        <option value="0" id="inputType2">支出</option>
+                                        <option value="1" id="inputType1">收入</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="inputCategory" class="col-sm-2 col-form-label">類別*</label>
+                                <div class="col-sm-10">
+                                    <select name="inputCategory" class="form-control" id="inputCategory">
+                                        <!-- 用categoryObj物件 動態新增類別 -->
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="inputItem" class="col-sm-2 col-form-label">品項*</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="inputItem"/>
+                                </div>
+                            </div>     
+                            <div class="form-group row">
+                                <label for="inputMoney" class="col-sm-2 col-form-label">金額*</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="inputMoney"/>
+                                </div>
+                            </div>   
+                            <div class="form-group row">
+                                <label for="inputLocation" class="col-sm-2 col-form-label">地點</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="inputLocation"/>
+                                </div>
+                            </div>  
+                            <div class="form-group row">
+                                <label for="inputMemo" class="col-sm-2 col-form-label">備註</label>
+                                <div class="col-sm-10">
+                                    <textarea class="form-control" id="inputMemo" rows="5"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="inputPicture" class="col-sm-2 col-form-label">照片</label>
+                                <div class="col-sm-10">
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="inputPicture" accept="image/*" name="inputPicture" value="0"></input>
+                                        <label class="custom-file-label" for="inputPicture" id="inputPicText">upload your image</label>
+                                    </div>
+                                </div>
+                            </div>                  
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-dark" data-dismiss="modal" onclick="setDefaultFormValue()">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="subExpenseForm()" name="expenseSaveBtn" id="expenseBtn">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 按鈕 新增一筆消費紀錄 -->
+    </div>
+<!-- 以下jQuery還沒修改好 -->
+<script>
+    $('.custom-file-input').on('change', function(){
+        var fileName = $(this).val().split('\\').pop();
+        $(this).siblings('.custom-file-label').addClass('selected').html(fileName);
+    });
+</script>
+</body>
+</html>
